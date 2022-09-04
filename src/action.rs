@@ -56,6 +56,12 @@ impl<'a> PdfAction<'a> {
         }
     }
 
+    /// Returns the internal FPDF_ACTION handle for this [PdfAction].
+    #[inline]
+    pub(crate) fn get_handle(&self) -> &FPDF_ACTION {
+        &self.handle
+    }
+
     /// Returns the [PdfActionType] for this [PdfAction].
     ///
     /// Note that Pdfium does not support or recognize all PDF action types. For instance,

@@ -286,6 +286,8 @@ impl DynamicPdfiumBindings {
         result.extern_FPDF_VIEWERREF_GetPrintPageRangeElement()?;
         result.extern_FPDF_VIEWERREF_GetDuplex()?;
         result.extern_FPDF_VIEWERREF_GetName()?;
+        result.extern_FPDFLink_GetAction()?;
+        result.extern_FPDFLink_GetDest()?;
 
         Ok(result)
     }
@@ -3962,6 +3964,30 @@ impl DynamicPdfiumBindings {
     > {
         unsafe { self.library.get(b"FPDF_VIEWERREF_GetName\0") }
     }
+
+
+    #[inline]
+    #[allow(non_snake_case)]
+    fn extern_FPDFLink_GetAction(
+        &self,
+    ) -> Result<
+        Symbol<unsafe extern "C" fn(link: FPDF_LINK) -> FPDF_ACTION>,
+        libloading::Error,
+    > {
+        unsafe { self.library.get(b"FPDFLink_GetAction\0") }
+    }
+
+
+    #[inline]
+    #[allow(non_snake_case)]
+    fn extern_FPDFLink_GetDest(
+        &self,
+    ) -> Result<
+        Symbol<unsafe extern "C" fn(document: FPDF_DOCUMENT, link: FPDF_LINK) -> FPDF_DEST>,
+        libloading::Error,
+    > {
+        unsafe { self.library.get(b"FPDFLink_GetDest\0") }
+    }
 }
 
 impl PdfiumLibraryBindings for DynamicPdfiumBindings {
@@ -6603,5 +6629,17 @@ impl PdfiumLibraryBindings for DynamicPdfiumBindings {
         unsafe {
             self.extern_FPDF_VIEWERREF_GetName().unwrap()(document, c_key.as_ptr(), buffer, length)
         }
+    }
+
+    #[inline]
+    #[allow(non_snake_case)]
+    fn FPDFLink_GetAction(&self, link: FPDF_LINK) -> FPDF_ACTION {
+        unsafe { self.extern_FPDFLink_GetAction().unwrap()(link) }
+    }
+
+    #[inline]
+    #[allow(non_snake_case)]
+    fn FPDFLink_GetDest(&self, document: FPDF_DOCUMENT, link: FPDF_LINK) -> FPDF_DEST {
+        unsafe { self.extern_FPDFLink_GetDest().unwrap()(document, link) }
     }
 }

@@ -2638,4 +2638,17 @@ impl<T: PdfiumLibraryBindings> PdfiumLibraryBindings for ThreadSafePdfiumBinding
         self.bindings
             .FPDF_VIEWERREF_GetName(document, key, buffer, length)
     }
+
+
+    #[inline]
+    #[allow(non_snake_case)]
+    fn FPDFLink_GetAction(&self, link: FPDF_LINK) -> FPDF_ACTION {
+        self.bindings.FPDFLink_GetAction(link)
+    }
+
+    #[inline]
+    #[allow(non_snake_case)]
+    fn FPDFLink_GetDest(&self, document: FPDF_DOCUMENT, link: FPDF_LINK) -> FPDF_DEST {
+        self.bindings.FPDFLink_GetDest(document, link)
+    }
 }

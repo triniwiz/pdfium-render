@@ -11,6 +11,7 @@ use crate::bindgen::{
     FPDF_ANNOT_XFAWIDGET,
 };
 use crate::bindings::PdfiumLibraryBindings;
+use crate::document::PdfDocument;
 use crate::error::PdfiumError;
 use crate::page::PdfRect;
 use crate::page_annotation_circle::PdfPageCircleAnnotation;
@@ -182,6 +183,7 @@ impl<'a> PdfPageAnnotation<'a> {
     #[inline]
     pub(crate) fn from_pdfium(
         handle: FPDF_ANNOTATION,
+        document: &'a PdfDocument<'a>,
         bindings: &'a dyn PdfiumLibraryBindings,
     ) -> Self {
         let annotation_type =
@@ -202,7 +204,7 @@ impl<'a> PdfPageAnnotation<'a> {
                 PdfPageAnnotation::Ink(PdfPageInkAnnotation::from_pdfium(handle, bindings))
             }
             PdfPageAnnotationType::Link => {
-                PdfPageAnnotation::Link(PdfPageLinkAnnotation::from_pdfium(handle, bindings))
+                PdfPageAnnotation::Link(PdfPageLinkAnnotation::from_pdfium(handle, document,bindings))
             }
             PdfPageAnnotationType::Popup => {
                 PdfPageAnnotation::Popup(PdfPagePopupAnnotation::from_pdfium(handle, bindings))

@@ -7,12 +7,14 @@ use crate::error::{PdfiumError, PdfiumInternalError};
 use crate::page_annotation::PdfPageAnnotation;
 use std::ops::Range;
 use std::os::raw::c_int;
+use crate::document::PdfDocument;
 
 pub type PdfPageAnnotationIndex = usize;
 
 /// The annotations that have been added to a single `PdfPage`.
 pub struct PdfPageAnnotations<'a> {
     page_handle: FPDF_PAGE,
+    document: &'a PdfDocument<'a>,
     bindings: &'a dyn PdfiumLibraryBindings,
 }
 
@@ -20,10 +22,12 @@ impl<'a> PdfPageAnnotations<'a> {
     #[inline]
     pub(crate) fn from_pdfium(
         page_handle: FPDF_PAGE,
+        document: &'a PdfDocument<'a>,
         bindings: &'a dyn PdfiumLibraryBindings,
     ) -> Self {
         Self {
             page_handle,
+            document,
             bindings,
         }
     }
@@ -70,6 +74,7 @@ impl<'a> PdfPageAnnotations<'a> {
         } else {
             Ok(PdfPageAnnotation::from_pdfium(
                 annotation_handle,
+                self.document,
                 self.bindings,
             ))
         }

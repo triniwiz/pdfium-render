@@ -1900,6 +1900,12 @@ pub trait PdfiumLibraryBindings {
             _ => None,
         }
     }
+
+    #[allow(non_snake_case)]
+    fn FPDFLink_GetAction(&self, link: FPDF_LINK) -> FPDF_ACTION;
+
+    #[allow(non_snake_case)]
+    fn FPDFLink_GetDest(&self, document: FPDF_DOCUMENT, link: FPDF_LINK) -> FPDF_DEST;
 }
 
 #[cfg(test)]

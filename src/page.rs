@@ -331,7 +331,7 @@ impl<'a> PdfPage<'a> {
             regeneration_strategy: PdfPageContentRegenerationStrategy::AutomaticOnEveryChange,
             is_content_regeneration_required: false,
             objects: PdfPageObjects::from_pdfium(*document.get_handle(), handle, bindings),
-            annotations: PdfPageAnnotations::from_pdfium(handle, bindings),
+            annotations: PdfPageAnnotations::from_pdfium(handle, document, bindings),
             bindings,
         }
     }
