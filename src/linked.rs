@@ -2599,4 +2599,16 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
 
         unsafe { crate::bindgen::FPDF_VIEWERREF_GetName(document, c_key.as_ptr(), buffer, length) }
     }
+
+    #[inline]
+    #[allow(non_snake_case)]
+    fn FPDFLink_GetAction(&self, link: FPDF_LINK) -> FPDF_ACTION {
+        unsafe { crate::bindgen::FPDFLink_GetAction(link) }
+    }
+
+    #[inline]
+    #[allow(non_snake_case)]
+    fn FPDFLink_GetDest(&self, document: FPDF_DOCUMENT, link: FPDF_LINK) -> FPDF_DEST {
+        unsafe { crate::bindgen::FPDFLink_GetDest(document, link) }
+    }
 }
