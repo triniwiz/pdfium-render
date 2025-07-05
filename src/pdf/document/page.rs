@@ -38,6 +38,8 @@ use crate::pdf::document::page::objects::PdfPageObjects;
 use crate::pdf::document::page::render_config::{PdfPageRenderSettings, PdfRenderConfig};
 use crate::pdf::document::page::size::PdfPagePaperSize;
 use crate::pdf::document::page::text::PdfPageText;
+#[cfg(doc)]
+use crate::pdf::document::{PdfDocument, PdfPages};
 use crate::pdf::font::PdfFont;
 use crate::pdf::matrix::{PdfMatrix, PdfMatrixValue};
 use crate::pdf::points::PdfPoints;
@@ -45,9 +47,7 @@ use crate::pdf::rect::PdfRect;
 use std::collections::{hash_map::Entry, HashMap};
 use std::f32::consts::{FRAC_PI_2, PI};
 use std::os::raw::{c_double, c_int};
-
-#[cfg(doc)]
-use crate::pdf::document::{PdfDocument, PdfPages};
+use std::sync::atomic::{AtomicBool, Ordering};
 
 /// The orientation of a [PdfPage].
 #[derive(Copy, Clone, Debug, PartialEq)]
@@ -190,6 +190,7 @@ pub struct PdfPage<'a> {
     boundaries: PdfPageBoundaries<'a>,
     links: PdfPageLinks<'a>,
     objects: PdfPageObjects<'a>,
+    is_open: AtomicBool,
     bindings: &'a dyn PdfiumLibraryBindings,
 }
 
@@ -223,6 +224,7 @@ impl<'a> PdfPage<'a> {
             boundaries: PdfPageBoundaries::from_pdfium(page_handle, bindings),
             links: PdfPageLinks::from_pdfium(page_handle, document_handle, bindings),
             objects: PdfPageObjects::from_pdfium(document_handle, page_handle, bindings),
+            is_open: AtomicBool::new(true),
             bindings,
         };
 
@@ -1044,7 +1046,10 @@ impl<'a> PdfPage<'a> {
             debug_assert!(result.is_ok());
         }
 
-        self.bindings.FPDF_ClosePage(self.page_handle);
+        if self.is_open.load(Ordering::SeqCst) {
+            self.bindings.FPDF_ClosePage(self.page_handle);
+            self.is_open.store(false, Ordering::SeqCst);
+        }
 
         PdfPageIndexCache::remove_index_for_page(self.document_handle, self.page_handle);
     }
